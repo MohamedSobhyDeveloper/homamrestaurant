@@ -7,6 +7,7 @@ import com.otex.homamrestaurant.utlitites.Constant
 import com.otex.homamrestaurant.utlitites.DataEnum
 import com.otex.homamrestaurant.utlitites.PrefsUtil.with
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit
 // end comment
 class RestRetrofit private constructor() {
     var apiKey = "api-key"
-    var Authorization = "authorization-token"
+    var Authorization = "Authorization"
     private val deviceKey = "device"
 
     private var deviceValue: String? = ""
@@ -62,6 +63,28 @@ class RestRetrofit private constructor() {
         val builder = OkHttpClient.Builder()
                 .readTimeout(6, TimeUnit.MINUTES)
                 .connectTimeout(1, TimeUnit.MINUTES)
+
+
+        builder.addInterceptor { chain ->
+            val request = chain.request()
+            val newRequest: Request
+            val token =with(mcontext!!)["token", ""]
+
+            if (token!!.isNotEmpty()) {
+
+                newRequest = request.newBuilder()
+                    .header(Authorization, "Bearer$token")
+                    .method(request.method, request.body)
+                    .build()
+                chain.proceed(newRequest)
+            } else {
+                newRequest = request.newBuilder()
+                    .method(request.method, request.body)
+                    .build()
+                chain.proceed(newRequest)
+            }
+        }
+
 
 
         val interceptor =  HttpLoggingInterceptor()

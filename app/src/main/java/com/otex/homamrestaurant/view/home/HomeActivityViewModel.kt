@@ -1,4 +1,4 @@
-package com.otex.homamrestaurant.view.login
+package com.otex.homamrestaurant.view.home
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
@@ -6,24 +6,24 @@ import androidx.lifecycle.ViewModel
 import com.otex.homamrestaurant.interfaces.HandleRetrofitResp
 import com.otex.homamrestaurant.retrofit.HandelCalls
 import com.otex.homamrestaurant.utlitites.DataEnum
-import com.otex.homamrestaurant.view.login.model.ModelLogin
+import com.otex.homamrestaurant.view.home.model.ModelHomeDashBord
 import java.util.HashMap
 
-class LoginActivityViewModel:ViewModel() , HandleRetrofitResp {
+class HomeActivityViewModel:ViewModel(), HandleRetrofitResp {
 
-    var loginLivedata = MutableLiveData<ModelLogin>()
+    var homeLivedata = MutableLiveData<ModelHomeDashBord>()
 
 
-    fun makeLogin(context: Context, meMap: HashMap<String, String?>?){
+    fun getHomeDashbord(context: Context){
 
-        HandelCalls.getInstance(context)?.call(DataEnum.login.name, meMap, true, this)
+        HandelCalls.getInstance(context)?.call(DataEnum.home.name, null, true, this)
 
     }
 
     override fun onResponseSuccess(flag: String?, o: Any?) {
-        if(flag== DataEnum.login.name){
-            val modelLogin: ModelLogin = o as ModelLogin
-            loginLivedata.value = modelLogin
+        if(flag==DataEnum.home.name){
+            val modelHomeDashBord: ModelHomeDashBord = o as ModelHomeDashBord
+            homeLivedata.value = modelHomeDashBord
         }
     }
 
@@ -38,6 +38,5 @@ class LoginActivityViewModel:ViewModel() , HandleRetrofitResp {
     override fun onBadRequest(flag: String?, o: Any?) {
         TODO("Not yet implemented")
     }
-
 
 }

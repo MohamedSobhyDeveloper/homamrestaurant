@@ -1,36 +1,38 @@
 package com.otex.homamrestaurant.view.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.otex.homamrestaurant.databinding.ActivityHomeBinding
 import com.otex.homamrestaurant.view.order.OrderActivity
 import com.otex.homamrestaurant.view.baseActivity.BaseActivity
 
 class HomeActivity : BaseActivity() {
     lateinit var binding: ActivityHomeBinding
-
+    private var homeActivityViewModel : HomeActivityViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        type_user()
+
+
+        initialize()
+
+        getHomeDashBord()
         click()
     }
 
-    private fun type_user() {
-        val type=intent.getStringExtra("type")
+    private fun getHomeDashBord() {
 
-        if(type.equals("driver")){
-            binding.canceledbtn.visibility=View.GONE
-            binding.totalstoreubtn.visibility=View.GONE
-        }else{
-            Log.e("type","not driver")
-        }
+        homeActivityViewModel!!.getHomeDashbord(this)
 
     }
+
 
     private fun click() {
 
@@ -70,6 +72,22 @@ class HomeActivity : BaseActivity() {
 //            val intent=Intent(this,OrderActivity::class.java)
 //            intent.putExtra("type","canceled")
 //            startActivity(intent)
+        }
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun initialize() {
+        homeActivityViewModel = ViewModelProvider(this).get(HomeActivityViewModel::class.java)
+        homeActivityViewModel!!.homeLivedata.observe(this) {
+
+            binding.orderCount.text=it.pending.toString() +" Order"
+            binding.deliveredCount.text=it.delivered.toString() +" Order"
+            binding.canceledCount.text=it.canceled.toString() +" Order"
+            binding.accptedCount.text=it.accepted.toString() +" Order"
+            binding.totalStoreCount.text=it.revenue.toString() +" Order"
+
+
         }
 
     }
